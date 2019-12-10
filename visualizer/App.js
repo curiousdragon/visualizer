@@ -1,41 +1,58 @@
 import React from 'react';
-import { StyleSheet, Text, View, StatusBar } from 'react-native';
-import Input from './components/Input';
+import { StyleSheet, View, Button } from 'react-native';
+import { Navigator, Route } from './Navigator';
 
-export default class Main extends React.Component {
-  state = {
-    inputValue: ''
-  };
+const Screen1 = ({ navigator }) => (
+  <View style={[styles.screen, { backgroundColor: '#59C9A5' }]}>
+    <Button
+      title="Screen 2"
+      onPress={() => navigator.push('Screen2')}
+    />
+    <Button
+      title="Pop"
+      onPress={() => navigator.pop()}
+    />
+  </View>
+);
 
-  newInputValue = value => {
-    this.setState({
-      inputValue: value
-    });
-  };
+const Screen2 = ({ navigator }) => (
+  <View style={[styles.screen, { backgroundColor: '#23395B' }]}>
+    <Button
+      title="Screen 3"
+      onPress={() => navigator.push('Screen3')}
+    />
+    <Button
+      title="Pop"
+      onPress={() => navigator.pop()}
+    />
+  </View>
+);
 
+const Screen3 = ({ navigator }) => (
+  <View style={[styles.screen, { backgroundColor: '#B9E3C6' }]}>
+    <Button
+      title="Pop"
+      onPress={() => navigator.pop()}
+    />
+  </View>
+);
+
+export default class App extends React.Component {
   render() {
-    const { inputValue, inputValue1 } = this.state;
     return (
-			<View style={styles.viewContainer}>
-				<View style={styles.inputContainer}>
-					<Input inputValue={inputValue1} onChangeText={this.newInputValue1} />
-				</View>
-				<View style={styles.inputContainer}>
-					<Input inputValue={inputValue} onChangeText={this.newInputValue} />
-				</View>
-			</View>
+      <Navigator>
+        <Route name="Screen1" component={Screen1} />
+        <Route name="Screen2" component={Screen2} />
+        <Route name="Screen3" component={Screen3} />
+      </Navigator>
     );
   }
 }
 
 const styles = StyleSheet.create({
-	viewContainer: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center'
-	},
-
-  inputContainer: {
-		flex: 0.1
-	}
+  screen: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
