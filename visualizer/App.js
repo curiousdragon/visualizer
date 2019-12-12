@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
-import Svg, { Line, Circle, Rect } from 'react-native-svg';
 
 import Drawer from './Drawer';
 
