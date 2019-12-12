@@ -1,58 +1,81 @@
 import React from 'react';
-import { StyleSheet, View, Button } from 'react-native';
-import { Navigator, Route } from './Navigator';
+import { View, StyleSheet, Dimensions } from 'react-native';
+import Svg, { Line, Circle, Rect } from 'react-native-svg';
 
-const Screen1 = ({ navigator }) => (
-  <View style={[styles.screen, { backgroundColor: '#59C9A5' }]}>
-    <Button
-      title="Screen 2"
-      onPress={() => navigator.push('Screen2')}
-    />
-    <Button
-      title="Pop"
-      onPress={() => navigator.pop()}
-    />
-  </View>
-);
+class Axis extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state={
+			height: this.props.height,
+			width: this.props.width,
+			x1: "100",
+			y1: "100",
+			x2: "100",
+			y2: "100",
+			stroke: "blue",
+			strokeWidth: "2"
+		};
+	}
 
-const Screen2 = ({ navigator }) => (
-  <View style={[styles.screen, { backgroundColor: '#23395B' }]}>
-    <Button
-      title="Screen 3"
-      onPress={() => navigator.push('Screen3')}
-    />
-    <Button
-      title="Pop"
-      onPress={() => navigator.pop()}
-    />
-  </View>
-);
+	setPos(x1, y1, x2, y2) {
+		this.state.x1 = x1;
+		this.state.y1 = y1;
+		this.state.x2 = x2;
+		this.state.y2 = y2;
+	}
 
-const Screen3 = ({ navigator }) => (
-  <View style={[styles.screen, { backgroundColor: '#B9E3C6' }]}>
-    <Button
-      title="Pop"
-      onPress={() => navigator.pop()}
-    />
-  </View>
-);
+	render() {
+		return (
+			<Line 
+			x1={this.state.x1} y1={this.state.y1}
+			x2={this.state.x2} y2={this.state.y2}
+			stroke={this.state.stroke}
+			strokeWidth={this.state.strokeWidth} />
+		);
+	}	
+}
+
+class AxisX extends Axis {
+	constructor(props) {
+		super(props);
+		var height = this.state.height * 0.85;
+		var width = this.state.width;
+		super.setPos("0", height, width, height);
+	}
+}
+
+class AxisY extends Axis {
+	constructor(props) {
+		super(props);
+		var height = this.state.height;
+		var width = this.state.width * 0.25;
+		super.setPos(width, 0, width, height);
+	}
+}
 
 export default class App extends React.Component {
   render() {
+		var { height, width } = Dimensions.get('window')
     return (
-      <Navigator>
-        <Route name="Screen1" component={Screen1} />
-        <Route name="Screen2" component={Screen2} />
-        <Route name="Screen3" component={Screen3} />
-      </Navigator>
+      <View style={styles.viewContainer}>
+				<Svg height={height} width={width}>
+					<AxisX height={height} width={width} />			
+					<AxisY height={height} width={width} />
+				</Svg>
+			</View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+	viewContainer: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center'
+	},
+
+  inputContainer: {
+		flex: 0.1
+	}
 });
+
