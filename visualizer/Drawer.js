@@ -1,6 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Line, Circle, Rect } from 'react-native-svg';
+import { PanGestureHandler, 
+				TapGestureHandler,
+				RotationGestureHandler,
+				FlingGestureHandler,
+				PinchGestureHandler } from 'react-native-gesture-handler';
 
 import Grid from './Grid';
 

@@ -33,7 +33,6 @@ export default class Grid extends React.Component {
   }
 }
 
-
 class Axis extends React.Component {
 	constructor(props) {
 		super(props);
@@ -227,15 +226,6 @@ class GridY extends GridLines {
 		);
 	}	
 }
-
-
-
-
-
-
-
-
-
 
 
 const styles = StyleSheet.create({
