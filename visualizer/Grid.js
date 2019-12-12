@@ -4,6 +4,9 @@ import Svg, { Line, Circle, Rect } from 'react-native-svg';
 
 const xAxisFactor = 0.85;
 const yAxisFactor = 0.25;
+const scale = 1;
+const xLinesNum = scale * 10;
+const gridLineOpacity = 0.1;
 
 export default class Grid extends React.Component {
 	constructor(props) {
@@ -23,6 +26,7 @@ export default class Grid extends React.Component {
 					<AxisX height={height} width={width} />			
 					<AxisY height={height} width={width} />
 					<GridX height={height} width={width} />
+					<GridY height={height} width={width} />
 				</Svg>
 			</View>
     );
@@ -42,7 +46,7 @@ class Axis extends React.Component {
 			y2: "100",
 			stroke: "blue",
 			strokeWidth: "2",
-			strokeOpacity: "1",
+			strokeOpacity: "0.8",
 		};
 	}
 
@@ -93,23 +97,57 @@ class AxisY extends Axis {
 		super(props);
 		var height = this.state.height;
 		var width = this.state.width * yAxisFactor;
-		super.setPos(width, 0, width, height);
+		super.setPos(width, "0", width, height);
 	}
 }
-
 
 class LineX extends AxisX {
 	constructor(props) {
 		super(props);
-		super.setStrokeOpacity("0.2");
-		var height = this.props.height * 0.85;
-		var width = this.props.width;		
-		super.setPos("0", height, width, height);
-		super.setPosY(this.props.y);
+		super.setStrokeOpacity(gridLineOpacity);
+		super.setPosY(this.props.offset);
 	}
 }
 
-class GridX extends React.Component {
+class LineY extends AxisY {
+	constructor(props) {
+		super(props);
+		super.setStrokeOpacity(gridLineOpacity);
+		super.setPosX(this.props.offset);
+	}
+}
+
+class LineOffset extends Axis {
+	constructor(props) {
+		super(props);
+		this.state={
+			height: this.props.height,
+			width: this.props.width,
+			offset: this.props.offset,
+			type: this.props.type,
+		};
+	}
+
+	render() {
+		if (this.state.type == "X") {
+			return (
+				<LineX 
+					height={this.state.height}
+					width={this.state.width}
+					offset={this.state.offset} />
+			);
+		} else if (this.state.type == "Y") {
+			return (
+				<LineY
+					height={this.state.height}
+					width={this.state.width}
+					offset={this.state.offset} />
+			);
+		}
+	}
+}
+
+class GridLines extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state={
@@ -118,50 +156,78 @@ class GridX extends React.Component {
 		};
 	}
 
-	generateLines(numOfLines) {
+	generateLines(numOfLines, delta, total, axisFactor, type) {
 		var lines = [];
-		var delta_y = 50;
-		for (let i=0; i < numOfLines; i++) {
-			var offset = "" + this.state.height + delta_y * i
-			lines.push([ i, offset ]);
-			console.warn(offset)
+		var initial = total * axisFactor;
+		var diff = total - initial;		
+
+		if (diff >= delta) {
+			initial += delta * Math.floor(diff / delta);
 		}
-		return lines;
-	}
-
-
-
-	generate(numOfLines) {
-		var lines = [];
-		var delta_y = this.state.height / numOfLines;
-
-		var initial = this.state.height * xAxisFactor;
-		var difference = this.state.height - initial;
-
-		if (difference >= delta_y) {
-			initial = initial + delta_y * (Math.floor(difference / delta_y) );
-		} 
 
 		for (let i=0; i < numOfLines; i++) {
-			var offset = "" + initial - delta_y * (i)
+			var offset = "" + initial - delta * i
 			lines.push(
-			<LineX 
-				height={this.state.height}
-				width={this.state.width}
-				y={offset} key={i}/>);
+				<LineOffset
+					height={this.state.height}
+					width={this.state.width}
+					offset={offset}
+					type={type}
+					key={i} />
+			);
 		}
 		return lines;
 	}
+}
 
+class GridX extends GridLines {
+	constructor(props) {
+		super(props);
+		this.state={
+			height: this.props.height,
+			width: this.props.width,
+			numOfLines: xLinesNum,
+		};
+	}
 
 	render() {
 		return (
 			<Svg height={this.state.height} width={this.state.width}>
-				{this.generate(10)}
+				{this.generateLines(
+					this.state.numOfLines,
+					(this.state.height / this.state.numOfLines),
+					this.state.height,
+					xAxisFactor,
+					"X")}
 			</Svg>
 		);
-	}
+	}	
 }
+
+class GridY extends GridLines {
+	constructor(props) {
+		super(props);
+		this.state={
+			height: this.props.height,
+			width: this.props.width,
+			numOfLines: this.props.width / (this.props.height / xLinesNum),
+		};
+	}
+
+	render() {
+		return (
+			<Svg height={this.state.height} width={this.state.width}>
+				{this.generateLines(
+					this.state.numOfLines,
+					(this.state.width / this.state.numOfLines),
+					this.state.width,
+					yAxisFactor,
+					"Y")}
+			</Svg>
+		);
+	}	
+}
+
 
 
 
