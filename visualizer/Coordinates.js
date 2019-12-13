@@ -40,6 +40,10 @@ export default class Coordinates {
 		var point = new TouchPoint(props);
 		return new TouchPoint(props);
 	}
+	
+	makePoint(props) {
+		return new Point(props);
+	}
 }
 
 

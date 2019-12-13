@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
-import Svg, { Line, Circle, Rect } from 'react-native-svg';
+import { G, Line, Circle, Rect } from 'react-native-svg';
+
+import Axis from './Axis';
 
 const xAxisFactor = 0.85;
 const yAxisFactor = 0.25;
@@ -22,66 +24,16 @@ export default class Grid extends React.Component {
 		var width = this.state.width;
 		var scale = this.state.scale;
     return (
-      <View style={styles.viewContainer}>
-				<Svg height={height} width={width}>
-					<AxisX height={height} width={width} scale={scale} />			
-					<AxisY height={height} width={width} scale={scale} />
-					<GridX height={height} width={width} scale={scale} />
-					<GridY height={height} width={width} scale={scale} />
-				</Svg>
-			</View>
+			<G height={height} width={width}>
+				<AxisX height={height} width={width} scale={scale} />			
+				<AxisY height={height} width={width} scale={scale} />
+				<GridX height={height} width={width} scale={scale} />
+				<GridY height={height} width={width} scale={scale} />
+			</G>
     );
-  }
+	}
 }
 
-class Axis extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state={
-			height: this.props.height,
-			width: this.props.width,
-			x1: "100",
-			y1: "100",
-			x2: "100",
-			y2: "100",
-			stroke: "blue",
-			strokeWidth: "2",
-			strokeOpacity: "0.8",
-		};
-	}
-
-	setPos(x1, y1, x2, y2) {
-		this.state.x1 = x1;
-		this.state.y1 = y1;
-		this.state.x2 = x2;
-		this.state.y2 = y2;
-	}
-
-	setPosX(x) {
-		this.state.x1 = x;
-		this.state.x2 = x;
-	}
-
-	setPosY(y) {
-		this.state.y1 = y;
-		this.state.y2 = y;
-	}
-
-	setStrokeOpacity(opacity) {
-		this.state.strokeOpacity = opacity;
-	}
-
-	render() {
-		return (
-			<Line 
-			x1={this.state.x1} y1={this.state.y1}
-			x2={this.state.x2} y2={this.state.y2}
-			stroke={this.state.stroke}
-			strokeWidth={this.state.strokeWidth}
-			strokeOpacity={this.state.strokeOpacity} />
-		);
-	}	
-}
 
 class AxisX extends Axis {
 	constructor(props) {
@@ -192,14 +144,14 @@ class GridX extends GridLines {
 
 	render() {
 		return (
-			<Svg height={this.state.height} width={this.state.width}>
+			<G height={this.state.height} width={this.state.width}>
 				{this.generateLines(
 					this.state.numOfLines,
 					(this.state.height / this.state.numOfLines),
 					this.state.height,
 					xAxisFactor,
 					"X")}
-			</Svg>
+			</G>
 		);
 	}	
 }
@@ -216,14 +168,14 @@ class GridY extends GridLines {
 
 	render() {
 		return (
-			<Svg height={this.state.height} width={this.state.width}>
+			<G height={this.state.height} width={this.state.width}>
 				{this.generateLines(
 					this.state.numOfLines,
 					(this.state.width / this.state.numOfLines),
 					this.state.width,
 					yAxisFactor,
 					"Y")}
-			</Svg>
+			</G>
 		);
 	}	
 }

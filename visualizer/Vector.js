@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions, Animated } from 'react-native';
-import Svg, { Line, Circle, Rect, Polygon } from 'react-native-svg';
+import { G, Line, Circle, Rect, Polygon } from 'react-native-svg';
 
-import Axis from './Grid';
+import LineVector from './LineVector';
 
 const xAxisFactor = 0.85;
 const yAxisFactor = 0.25;
@@ -22,14 +22,14 @@ export default class Vector extends React.Component {
 	}
 
   render() {
-		var height = this.state.height
-		var width = this.state.width
+		var height = this.state.height;
+		var width = this.state.width;
     return (
-			<Svg height={height} width={width}>
+			<G height={height} width={width}>
 				<LineArrowHead 
-					height={height} weight={weight} 
-					origin={origin} head={head} />
-			</Svg>
+					height={height} width={width} 
+					origin={this.state.origin} head={this.state.head} />
+			</G>
     );
   }
 }
@@ -40,23 +40,45 @@ class Triangle extends React.Component {
 		this.state={
 			origin: this.props.origin,
 			head: this.props.head,
-			triHeight: 15,
-			triBase: 20,
+			triBase: 15,
+			triHeight: 15 * (3^0.5) / 2,
 			fill: "blue",
 			stroke: "blue",
 			strokeWidth: "1",
 		};
 	}
 
-	getPoints() {
-		var slope = this.state.origin
-		return "" + points
+	getPoints() { // note top - left - right: clockwise
+		var head = this.state.head;
+		var origin = this.state.origin;
+
+		var alpha = Math.atan((head.y() - origin.y()) / (head.x() - origin.x()));
+
+		// note: sine and cosine takes in radians
+		var mid_pointX = head.x() - this.state.triHeight * Math.cos(alpha);
+		var mid_pointY = head.y() - this.state.triHeight * Math.sin(alpha);
+
+		var top_pointX = head.x();
+		var top_pointY = head.y();
+
+		var diffX = (this.state.triBase / 2) * Math.sin(alpha);
+		var diffY = (this.state.triBase / 2) * Math.cos(alpha);
+
+		var left_pointX = mid_pointX - diffX;
+		var left_pointY = mid_pointY + diffY;
+
+		var right_pointX = mid_pointX + diffX;
+		var right_pointY = mid_pointY - diffY;
+
+		return ("" + top_pointX + "," + top_pointY + " " + 
+			left_pointX + "," + left_pointY + " " +
+			right_pointX + "," + right_pointY);
 	}
 
 	render() {
 		return (
 			<Polygon
-				points={getPoints()}
+				points={this.getPoints()}
 				fill={this.state.fill}
 				stroke={this.state.stroke}
 				strokeWidth={this.state.strokeWidth} />
@@ -64,25 +86,30 @@ class Triangle extends React.Component {
 	}
 }
 
-class LineArrowHead extends Axis {
+class LineArrowHead extends React.Component {
 	constructor(props) {
 		super(props);
-		super.setPos(this.props.origin.x(), this.props.origin.y(), 
-			this.props.head.x(), this.props.head.y());
+		console.log(props.head);
 		this.state={
-			height: this.props.height,
-			width: this.props.width
+			x1: this.props.origin.x(), 
+			y1: this.props.origin.y(), 
+			x2: this.props.head.x(), 
+			y2: this.props.head.y(),
 			origin: this.props.origin,
 			head: this.props.head,
 		};
 	}
 
 	render() {
+		var height = this.state.height;
+		var width = this.state.width;
+
 		return (
-			<Svg height={height} width={width}>
-				{super.render()}
+			<G height={this.state.height} width={this.state.width}>
+				<LineVector x1={this.state.x1} y1={this.state.y1}
+					x2={this.state.x2} y2={this.state.y2} />
 				<Triangle origin={this.state.origin} head={this.state.head} />
-			</Svg>
+			</G>
 		);
 	}
 
