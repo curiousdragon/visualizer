@@ -8,29 +8,48 @@ const gridLineOpacity = 0.1;
 export default class Coordinates {
 	constructor(props) {
 		this.state={
-			height: this.props.height,
-			width: this.props.width,
-			scale: this.props.scale,
-			xLinesNum: this.props.scale * 10,
-			origin: this.findOrigin(this.props.height, this.props.width),
+			height: props.height.height,
+			width: props.width.width,
+			scale: props.scale.scale,
+			xLinesNum: props.scale.scale * 10,
+			origin: this.setOrigin(props.height.height, props.width.width),
 		};
 	}
 
-	findOrigin(height, width) {
+	setOrigin(height, width) {
 		origin_y = height * xAxisFactor;
 		origin_x = width * yAxisFactor;
-		return new Point(origin_x, origin_y, 0, 0)
+		return new Point({
+			x: origin_x, 
+			y: origin_y, 
+			coord_x: 0, 
+			coord_y: 0})
+	}
+
+	getOrigin() {
+		return this.state.origin;
+	}
+
+	makeTouchPoint() {
+		var props = {
+			height: this.state.height, 
+			width: this.state.width,
+			xLinesNum: this.state.xLinesNum,
+			origin: this.state.origin
+		};
+		var point = new TouchPoint(props);
+		return new TouchPoint(props);
 	}
 }
 
 
 class Point {
 	constructor(props) {
-		this.state={
-			x: this.props.x,
-			y: this.props.y,
-			coord_x: this.props.coord_x,
-			coord_y: this.props.coord_y,
+		 this.state={
+			x: props.x,
+			y: props.y,
+			coord_x: props.coord_x,
+			coord_y: props.coord_y,
 		};
 	}
 
@@ -53,51 +72,52 @@ class Point {
 
 class TouchPoint extends Point {
 	constructor(props) {
+		super(props);
 		this.state={
 			x: 0,
 			y: 0,
 			coord_x: 0,
 			coord_y: 0,
-			height: this.props.height,
-			width: this.props.width,
-			delta: this.props.height / this.props.xLinesNum,
-			origin: this.props.origin,
+			height: props.height,
+			width: props.width,
+			delta: props.height / props.xLinesNum,
+			origin: props.origin,
 		};
 	}
 
 	convertXPosition(xPosition) {
 		var pos_x = xPosition * this.state.width;
-		return pos_x;
+		return xPosition;
 	}
 
 	convertYPosition(yPosition) {
 		var pos_y = yPosition * this.state.height;
-		return pos_y;
+		return yPosition;
 	}
 
 	convertX(xPosition) {
 		var origin_x = this.state.origin.x();
-		var pos_x = convertXPosition(xPosition);
+		var pos_x = this.convertXPosition(xPosition);
 		var diff = pos_x - origin_x;
 
-		var coord_diff = diff / delta;
+		var coord_diff = diff / this.state.delta;
 		return coord_diff;
 	}
 
 	convertY(yPosition) {
 		var origin_y = this.state.origin.y();
-		var pos_y = convertYPosition(yPosition);
+		var pos_y = this.convertYPosition(yPosition);
 		var diff = pos_y - origin_y;
 
-		var coord_diff = diff / delta;
-		return coord_diff
+		var coord_diff = diff / this.state.delta;
+		return -1 * coord_diff
 	}
 
 	convertTouchToPoint(touchEvent) {
-		this.state.x = convertXPosition(touchEvent.absoluteX);
-		this.state.y = convertYPosition(touchEvent.absoluteY);
-		this.state.coord_x = convertX(touchEvent.absoluteX);
-		this.state.coord_y = convertY(touchEvent.absoluteY);
+		this.state.x = this.convertXPosition(touchEvent.absoluteX);
+		this.state.y = this.convertYPosition(touchEvent.absoluteY);
+		this.state.coord_x = this.convertX(touchEvent.absoluteX);
+		this.state.coord_y = this.convertY(touchEvent.absoluteY);
 	}
 }
 
