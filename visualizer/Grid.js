@@ -18,8 +18,8 @@ export default class Grid extends React.Component {
 	}
 
   render() {
-		var height = this.state.height
-		var width = this.state.width
+		var height = this.state.height;
+		var width = this.state.width;
     return (
       <View style={styles.viewContainer}>
 				<Svg height={height} width={width}>

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 
 import Drawer from './Drawer';
+import Coordinates from './Coordinates';
 
 export default class App extends React.Component {
   render() {

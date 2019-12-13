@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions, Animated } from 'react-native';
 import Svg, { Line, Circle, Rect, Polygon } from 'react-native-svg';
 
 import Axis from './Grid';
@@ -49,7 +49,7 @@ class Triangle extends React.Component {
 	}
 
 	getPoints() {
-		var slope = this.state.origin.
+		var slope = this.state.origin
 		return "" + points
 	}
 
@@ -67,6 +67,8 @@ class Triangle extends React.Component {
 class LineArrowHead extends Axis {
 	constructor(props) {
 		super(props);
+		super.setPos(this.props.origin.x(), this.props.origin.y(), 
+			this.props.head.x(), this.props.head.y());
 		this.state={
 			height: this.props.height,
 			width: this.props.width
