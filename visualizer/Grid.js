@@ -4,8 +4,6 @@ import Svg, { Line, Circle, Rect } from 'react-native-svg';
 
 const xAxisFactor = 0.85;
 const yAxisFactor = 0.25;
-const scale = 1;
-const xLinesNum = scale * 10;
 const gridLineOpacity = 0.1;
 
 export default class Grid extends React.Component {
@@ -13,20 +11,23 @@ export default class Grid extends React.Component {
 		super(props);
 		this.state={
 			height: this.props.height,
-			width: this.props.width
+			width: this.props.width,
+			scale: this.props.scale,
+			xLinesNum: this.props.scale * 10,
 		};
 	}
 
   render() {
 		var height = this.state.height;
 		var width = this.state.width;
+		var scale = this.state.scale;
     return (
       <View style={styles.viewContainer}>
 				<Svg height={height} width={width}>
-					<AxisX height={height} width={width} />			
-					<AxisY height={height} width={width} />
-					<GridX height={height} width={width} />
-					<GridY height={height} width={width} />
+					<AxisX height={height} width={width} scale={scale} />			
+					<AxisY height={height} width={width} scale={scale} />
+					<GridX height={height} width={width} scale={scale} />
+					<GridY height={height} width={width} scale={scale} />
 				</Svg>
 			</View>
     );
@@ -185,7 +186,7 @@ class GridX extends GridLines {
 		this.state={
 			height: this.props.height,
 			width: this.props.width,
-			numOfLines: xLinesNum,
+			numOfLines: this.props.scale * 10,
 		};
 	}
 
@@ -209,7 +210,7 @@ class GridY extends GridLines {
 		this.state={
 			height: this.props.height,
 			width: this.props.width,
-			numOfLines: this.props.width / (this.props.height / xLinesNum),
+			numOfLines: this.props.width / (this.props.height / (this.props.scale * 10)),
 		};
 	}
 

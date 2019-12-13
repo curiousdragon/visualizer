@@ -13,7 +13,7 @@ import Coordinates, { TouchPoint } from './Coordinates';
 
 const xAxisFactor = 0.85;
 const yAxisFactor = 0.25;
-const scale = 1;
+const scale = 0.5;
 const xLinesNum = scale * 10;
 
 
@@ -48,7 +48,7 @@ export default class Drawer extends React.Component {
 				onHandlerStateChange={this._onDoubleTap}
 				numberOfTaps={2}>
 				<View style={styles.viewContainer}>			
-					<Grid height={height} width={width} />
+					<Grid height={height} width={width} scale={scale} />
 				</View>
 			</TapGestureHandler>
 		);
