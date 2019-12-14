@@ -2,10 +2,6 @@ import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Line, Circle, Rect } from 'react-native-svg';
 
-const xAxisFactor = 0.85;
-const yAxisFactor = 0.25;
-const gridLineOpacity = 0.1;
-
 export default class Axis extends React.Component {
 	constructor(props) {
 		super(props);

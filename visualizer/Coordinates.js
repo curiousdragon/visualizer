@@ -1,10 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 
-const xAxisFactor = 0.85;
-const yAxisFactor = 0.25;
-const gridLineOpacity = 0.1;
-
 export default class Coordinates {
 	constructor(props) {
 		this.state={
@@ -12,11 +8,17 @@ export default class Coordinates {
 			width: props.width.width,
 			scale: props.scale.scale,
 			xLinesNum: props.scale.scale * 10,
-			origin: this.setOrigin(props.height.height, props.width.width),
+			xAxisFactor: props.xAxisFactor.xAxisFactor,
+			yAxisFactor: props.yAxisFactor.yAxisFactor,
+			origin: this.setOrigin(
+				props.height.height,
+				props.width.width,
+				props.xAxisFactor.xAxisFactor,
+				props.yAxisFactor.yAxisFactor),
 		};
 	}
 
-	setOrigin(height, width) {
+	setOrigin(height, width, xAxisFactor, yAxisFactor) {
 		origin_y = height * xAxisFactor;
 		origin_x = width * yAxisFactor;
 		return new Point({

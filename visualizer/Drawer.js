@@ -9,11 +9,11 @@ import { State,
 				PinchGestureHandler } from 'react-native-gesture-handler';
 
 import Grid from './Grid';
-import Coordinates, { TouchPoint, Point } from './Coordinates';
+import Coordinates  from './Coordinates';
 import Vector from './Vector';
 
-const xAxisFactor = 0.85;
-const yAxisFactor = 0.25;
+const xAxisFactor = 0.5;
+const yAxisFactor = 0.5;
 const scale = 1;
 const xLinesNum = scale * 10;
 
@@ -24,9 +24,11 @@ export default class Drawer extends React.Component {
 		var height = Dimensions.get('window').height;
 		var width = Dimensions.get('window').width;
 		var coords = new Coordinates({
-				height: {height}, 
-				width: {width}, 
-				scale: {scale}});
+			height: {height}, 
+			width: {width}, 
+			scale: {scale},
+			xAxisFactor: {xAxisFactor},
+			yAxisFactor: {yAxisFactor}});
 		var delta = height / xLinesNum;
 
 		this.state={
@@ -35,7 +37,9 @@ export default class Drawer extends React.Component {
 			coords: new Coordinates({
 				height: {height}, 
 				width: {width}, 
-				scale: {scale}}),
+				scale: {scale},
+				xAxisFactor: {xAxisFactor},
+				yAxisFactor: {yAxisFactor}}),
 			vectorList: 
 				[<Vector height={height} width={width} 
 					origin={coords.getOrigin()}
@@ -53,6 +57,7 @@ export default class Drawer extends React.Component {
 			var { height, width } = Dimensions.get('window');
 			var point = this.state.coords.makeTouchPoint();
 			point.convertTouchToPoint(event.nativeEvent);
+			console.log(point);
 
 			var newVectorList = this.state.vectorList;
 			newVectorList.push(
@@ -67,7 +72,6 @@ export default class Drawer extends React.Component {
 				vectorCounter: state.vectorCounter + 1,
 				vectorList: newVectorList,
 			}));
-			console.log(this.state.vectorList);
 		}
 	}
 
@@ -81,7 +85,8 @@ export default class Drawer extends React.Component {
 				numberOfTaps={2}>
 				<View style={styles.viewContainer}>
 					<Svg height={height} width={width}>
-						<Grid height={height} width={width} scale={scale} />
+						<Grid height={height} width={width} scale={scale} 
+									xAxisFactor={xAxisFactor} yAxisFactor={yAxisFactor} />
 						<G>
 						{this.state.vectorList}	
 						</G>

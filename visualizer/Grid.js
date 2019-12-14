@@ -4,8 +4,6 @@ import { G, Line, Circle, Rect } from 'react-native-svg';
 
 import Axis from './Axis';
 
-const xAxisFactor = 0.85;
-const yAxisFactor = 0.25;
 const gridLineOpacity = 0.1;
 
 export default class Grid extends React.Component {
@@ -16,6 +14,8 @@ export default class Grid extends React.Component {
 			width: this.props.width,
 			scale: this.props.scale,
 			xLinesNum: this.props.scale * 10,
+			xAxisFactor: this.props.xAxisFactor,
+			yAxisFactor: this.props.yAxisFactor,
 		};
 	}
 
@@ -23,12 +23,19 @@ export default class Grid extends React.Component {
 		var height = this.state.height;
 		var width = this.state.width;
 		var scale = this.state.scale;
+		var xAF = this.state.xAxisFactor;
+		var yAF = this.state.yAxisFactor;
+	
     return (
 			<G height={height} width={width}>
-				<AxisX height={height} width={width} scale={scale} />			
-				<AxisY height={height} width={width} scale={scale} />
-				<GridX height={height} width={width} scale={scale} />
-				<GridY height={height} width={width} scale={scale} />
+				<AxisX height={height} width={width} scale={scale} 
+					xAxisFactor={xAF} yAxisFactor={yAF} />			
+				<AxisY height={height} width={width} scale={scale} 
+					xAxisFactor={xAF} yAxisFactor={yAF} />
+				<GridX height={height} width={width} scale={scale}
+					xAxisFactor={xAF} yAxisFactor={yAF} />
+				<GridY height={height} width={width} scale={scale}
+					xAxisFactor={xAF} yAxisFactor={yAF} />			
 			</G>
     );
 	}
@@ -38,7 +45,7 @@ export default class Grid extends React.Component {
 class AxisX extends Axis {
 	constructor(props) {
 		super(props);
-		var height = this.state.height * xAxisFactor;
+		var height = this.state.height * this.props.xAxisFactor;
 		var width = this.state.width;
 		super.setPos("0", height, width, height);
 	}
@@ -48,7 +55,7 @@ class AxisY extends Axis {
 	constructor(props) {
 		super(props);
 		var height = this.state.height;
-		var width = this.state.width * yAxisFactor;
+		var width = this.state.width * this.props.yAxisFactor;
 		super.setPos(width, "0", width, height);
 	}
 }
@@ -139,6 +146,7 @@ class GridX extends GridLines {
 			height: this.props.height,
 			width: this.props.width,
 			numOfLines: this.props.scale * 10,
+			xAxisFactor: this.props.xAxisFactor,
 		};
 	}
 
@@ -149,7 +157,7 @@ class GridX extends GridLines {
 					this.state.numOfLines,
 					(this.state.height / this.state.numOfLines),
 					this.state.height,
-					xAxisFactor,
+					this.state.xAxisFactor,
 					"X")}
 			</G>
 		);
@@ -163,6 +171,7 @@ class GridY extends GridLines {
 			height: this.props.height,
 			width: this.props.width,
 			numOfLines: this.props.width / (this.props.height / (this.props.scale * 10)),
+			yAxisFactor: this.props.yAxisFactor,
 		};
 	}
 
@@ -173,7 +182,7 @@ class GridY extends GridLines {
 					this.state.numOfLines,
 					(this.state.width / this.state.numOfLines),
 					this.state.width,
-					yAxisFactor,
+					this.state.yAxisFactor,
 					"Y")}
 			</G>
 		);

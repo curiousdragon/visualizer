@@ -4,11 +4,7 @@ import { G, Line, Circle, Rect, Polygon } from 'react-native-svg';
 
 import LineVector from './LineVector';
 
-const xAxisFactor = 0.85;
-const yAxisFactor = 0.25;
-const scale = 1;
-const xLinesNum = scale * 10;
-const gridLineOpacity = 0.1;
+const triangleSide = 15;
 
 export default class Vector extends React.Component {
 	constructor(props) {
@@ -40,48 +36,68 @@ class Triangle extends React.Component {
 		this.state={
 			origin: this.props.origin,
 			head: this.props.head,
-			triBase: 15,
-			triHeight: 15 * (3^0.5) / 2,
+			triBase: triangleSide,
+			triHeight: triangleSide * Math.pow(3, 0.5) / 2,
 			fill: "blue",
 			stroke: "blue",
 			strokeWidth: "1",
 		};
 	}
 
-	getPoints() { // note top - left - right: clockwise
+	getPoints() {
 		var head = this.state.head;
 		var origin = this.state.origin;
-
-		var alpha = Math.atan((head.y() - origin.y()) / (head.x() - origin.x()));
-
-		// note: sine and cosine takes in radians
-		var mid_pointX = head.x() - this.state.triHeight * Math.cos(alpha);
-		var mid_pointY = head.y() - this.state.triHeight * Math.sin(alpha);
 
 		var top_pointX = head.x();
 		var top_pointY = head.y();
 
-		var diffX = (this.state.triBase / 2) * Math.sin(alpha);
-		var diffY = (this.state.triBase / 2) * Math.cos(alpha);
+		var diffX = this.state.triBase / 2;
+		var diffY = this.state.triHeight;
 
-		var left_pointX = mid_pointX - diffX;
-		var left_pointY = mid_pointY + diffY;
+		var left_pointX = top_pointX - diffX;
+		var left_pointY = top_pointY + diffY;
 
-		var right_pointX = mid_pointX + diffX;
-		var right_pointY = mid_pointY - diffY;
+		var right_pointX = top_pointX + diffX;
+		var right_pointY = top_pointY + diffY;
 
 		return ("" + top_pointX + "," + top_pointY + " " + 
 			left_pointX + "," + left_pointY + " " +
 			right_pointX + "," + right_pointY);
 	}
 
+	getRotation() {
+		var head = this.state.head;
+		var origin = this.state.origin;
+		
+		var alpha = Math.atan((head.y() - origin.y()) / (head.x() - origin.x()));
+		var alpha_degrees = alpha * 180 / Math.PI;
+		var rotate = alpha_degrees;
+
+		if (head.x() < origin.x()) {
+			rotate -= 90;
+		} else {
+			rotate += 90;
+		}
+
+		return "" + rotate;
+	}
+
+	getOrigin() {
+		var head = this.state.head;
+		var x = head.x();
+		var y = head.y();
+		return "" + x + ", " + y;
+	}
+
 	render() {
 		return (
-			<Polygon
-				points={this.getPoints()}
-				fill={this.state.fill}
-				stroke={this.state.stroke}
-				strokeWidth={this.state.strokeWidth} />
+			<G rotation={this.getRotation()} origin={this.getOrigin()}>
+				<Polygon
+					points={this.getPoints()}
+					fill={this.state.fill}
+					stroke={this.state.stroke}
+					strokeWidth={this.state.strokeWidth} />
+			</G>
 		);
 	}
 }
@@ -89,7 +105,6 @@ class Triangle extends React.Component {
 class LineArrowHead extends React.Component {
 	constructor(props) {
 		super(props);
-		console.log(props.head);
 		this.state={
 			x1: this.props.origin.x(), 
 			y1: this.props.origin.y(), 
