@@ -178,10 +178,12 @@ export default class Drawer extends React.Component {
 		var origin = this.state.coords.getOrigin();
 
     return (
-			/*
+			
 			<TapGestureHandler 
 				onHandlerStateChange={this._onDoubleTap}
-				numberOfTaps={2}> */
+				numberOfTaps={2}> 
+			
+			<Animated.View style={styles.viewContainer}>
 
 			<PanGestureHandler
 				onGestureEvent={this._onGestureEvent}
@@ -235,7 +237,9 @@ export default class Drawer extends React.Component {
 			</Animated.View>
 			</PanGestureHandler>
 
-			//</TapGestureHandler>
+			</Animated.View>
+
+			</TapGestureHandler>
 		);
   }
 }
