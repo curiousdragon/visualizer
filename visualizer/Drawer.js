@@ -205,7 +205,6 @@ export default class Drawer extends React.Component {
 					</G>
 
 			<Animated.View style={[
-				styles.animatedStyles,
 				{
 					transform: [
 						{ translateX: this._translateX },
@@ -214,7 +213,7 @@ export default class Drawer extends React.Component {
 				},
 			]}>
 
-			<Svg>
+			<Svg height={height} width={width}>
 
 				<G>
 					{this.state.moveableVec}
@@ -254,7 +253,6 @@ const styles = StyleSheet.create({
 	animatedStyles: {
 		width: 100,
 		height: 100,
-		alignSelf: 'center',
 		backgroundColor: 'blue',
 		opacity: 0.5,
 	},
