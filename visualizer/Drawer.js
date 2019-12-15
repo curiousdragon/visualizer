@@ -190,6 +190,7 @@ export default class Drawer extends React.Component {
 				//onHandlerStateChange={this._onPan}
 				minDist={10}
 				minPointers={1}>
+			<Animated.View style={styles.viewContainer}>
 
 
 				<Svg height={height} width={width} >
@@ -210,10 +211,14 @@ export default class Drawer extends React.Component {
 					],
 				},
 			]}>
-	
-					{this.state.moveableVec}
-					
 
+			<Svg>
+
+				<G>
+					{this.state.moveableVec}
+				</G>
+
+			</Svg>
 			</Animated.View>
 
 
@@ -227,6 +232,7 @@ export default class Drawer extends React.Component {
 						coord_y: 0})} />
 
 				</Svg>
+			</Animated.View>
 			</PanGestureHandler>
 
 			//</TapGestureHandler>

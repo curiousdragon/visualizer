@@ -1,86 +1,59 @@
 import React, { Component } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { View, StyleSheet, Dimensions, Animated } from 'react-native';
+import Svg, { Rect } from 'react-native-svg';
 
-import {
-  PanGestureHandler,
-  ScrollView,
-  State,
-} from 'react-native-gesture-handler';
+const { width, height } = Dimensions.get('window');
+const AnimatedRect = Animated.createAnimatedComponent(Rect);
+const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 
+class SvgRoot extends Component {
+  state = {
+    initAnim: new Animated.Value(0),
+  };
 
-export default class Example extends React.Component {
+  componentDidMount() {
+    Animated.timing(
+      // Animate over time
+      this.state.initAnim,
+      {
+        toValue: 1,
+        duration: 3000,
+        useNativeDriver: true,
+      }
+    ).start();
+  }
+
   render() {
+    const { initAnim } = this.state;
+    let animateWidth = initAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0', '80'],
+    });
     return (
-			<View style={styles.scrollView}>
-			<DraggableBox />
-			</View>
+      <AnimatedSvg width={width} height={height} viewBox="0 0 100 100">
+        <AnimatedRect
+          y="10"
+          x="10"
+          height="80"
+          width={animateWidth}
+        />
+      </AnimatedSvg>
     );
   }
 }
 
-
-
-class DraggableBox extends React.Component {
-  constructor(props) {
-    super(props);
-    this._translateX = new Animated.Value(0);
-    this._translateY = new Animated.Value(0);
-    this._lastOffset = { x: 0, y: 0 };
-    this._onGestureEvent = Animated.event(
-      [
-        {
-          nativeEvent: {
-            translationX: this._translateX,
-            translationY: this._translateY,
-          },
-        },
-      ],
-      { useNativeDriver: true }
-    );
-  }
-
-  _onHandlerStateChange = event => {
-    if (event.nativeEvent.oldState === State.ACTIVE) {
-      this._lastOffset.x += event.nativeEvent.translationX;
-      this._lastOffset.y += event.nativeEvent.translationY;
-      this._translateX.setOffset(this._lastOffset.x);
-      this._translateX.setValue(0);
-      this._translateY.setOffset(this._lastOffset.y);
-      this._translateY.setValue(0);
-    }
-  }
-
+export default class Example extends Component {
   render() {
     return (
-      <PanGestureHandler
-        onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}>
-        <Animated.View
-          style={[
-            styles.box,
-            {
-              transform: [
-                { translateX: this._translateX },
-                { translateY: this._translateY },
-              ],
-            },
-          ]}
-        />
-      </PanGestureHandler>
+      <View style={styles.container}>
+        <SvgRoot />
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-  },
-  box: {
-    width: 150,
-    height: 150,
-    alignSelf: 'center',
-		backgroundColor: "blue",
-    margin: 10,
-    zIndex: 200,
+  container: {
+    backgroundColor: '#ecf0f1',
   },
 });
