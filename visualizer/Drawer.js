@@ -192,10 +192,10 @@ export default class Drawer extends React.Component {
 				//onHandlerStateChange={this._onPan}
 				minDist={10}
 				minPointers={1}>
-			<Animated.View style={styles.viewContainer}>
 
+				<Animated.View style={styles.viewContainer}>
 
-				<Svg height={height} width={width} >
+				<Svg height={height} width={width}>
 					<Rect height={height} width={width} fill="blue" opacity="0.01" />
 					<Grid height={height} width={width} scale={scale} 
 						xAxisFactor={xAxisFactor} yAxisFactor={yAxisFactor} />
@@ -204,25 +204,20 @@ export default class Drawer extends React.Component {
 					{this.state.vectorList}	
 					</G>
 
-			<Animated.View style={[
-				{
-					transform: [
-						{ translateX: this._translateX },
-						{ translateY: this._translateY },
-					],
-				},
-			]}>
-
-			<Svg height={height} width={width}>
-
-				<G>
-					{this.state.moveableVec}
-				</G>
-
-			</Svg>
-			</Animated.View>
-
-
+					<Animated.View style={[
+						{
+							transform: [
+								{ translateX: this._translateX },
+								{ translateY: this._translateY },
+							],
+						},
+					]}>
+					<Svg height={height} width={width}>
+						<G> 
+						{this.state.moveableVec}
+						</G>
+					</Svg>
+					</Animated.View>
 
 					<Vector height={height} width={width} 
 						origin={origin}
@@ -234,6 +229,7 @@ export default class Drawer extends React.Component {
 
 				</Svg>
 			</Animated.View>
+
 			</PanGestureHandler>
 
 			</Animated.View>
