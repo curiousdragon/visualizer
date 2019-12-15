@@ -234,7 +234,7 @@ class GridLines extends React.Component {
 		if (type == "X") {
 			for (let i = 0; i <= numOfLines; i++) {
 				var offset = "" + initial - delta * i;
-				var endVal = (i - Math.floor(diff / delta)) / dDelta;
+				var endVal = (i - Math.floor(diff / delta)) * dDelta;
 
 				//console.log("is this endVal? see below");
 				//console.log(endVal);
@@ -255,7 +255,7 @@ class GridLines extends React.Component {
 				var offset = "" + initial - delta * i;
 				//console.log("OFFSET?");
 				//console.log(offset);
-				var endVal = (i - Math.floor(diff / delta)) / dDelta;
+				var endVal = (i - Math.floor(diff / delta)) * dDelta;
 
 				lines.push(
 					<LineOffset
