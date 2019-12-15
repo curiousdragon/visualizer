@@ -28,13 +28,16 @@ export default class Transform extends React.Component {
 
   render() {
 		var { height, width } = Dimensions.get('window');
+		var height = height * 1.5;
+		var width = width * 1.5;
 
 		return (
 			<Animated.View style={styles.viewContainer}>
-				<Svg height={height - 100} width={width - 100}>
-					<Rect height={height - 100} width={width - 100} fill="blue" opacity="0.01" />
-					<TransformGrid height={height - 100} width={width - 100} scale={scale} 
-						xAxisFactor={xAxisFactor} yAxisFactor={yAxisFactor} />
+				<Svg height={height} width={width}>
+					<Rect height={height} width={width} fill="blue" opacity="0.01" />
+					<TransformGrid height={height} width={width} scale={scale} 
+						xAxisFactor={xAxisFactor} yAxisFactor={yAxisFactor} 
+						newScale={scale * 0.8} />
 				</Svg>
 			</Animated.View>
 		);
@@ -55,7 +58,4 @@ const styles = StyleSheet.create({
 		opacity: 0.5,
 	},
 
-  inputContainer: {
-		flex: 0.1
-	}
 });

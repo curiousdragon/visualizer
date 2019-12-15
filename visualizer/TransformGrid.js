@@ -1,15 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, Dimensions, Animated } from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 import Svg, { G, Line } from 'react-native-svg';
 
 import Axis from './Axis';
 
 const gridLineOpacity = 0.1;
 
-
-
-
-export default class Grid extends React.Component {
+export default class TransformGrid extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state={
@@ -19,7 +16,7 @@ export default class Grid extends React.Component {
 			xLinesNum: this.props.scale * 10,
 			xAxisFactor: this.props.xAxisFactor,
 			yAxisFactor: this.props.yAxisFactor,
-			
+			newScale: this.props.newScale,
 		};
 
 		this.rotateX = new Animated.Value(0);
@@ -28,19 +25,18 @@ export default class Grid extends React.Component {
 
 	componentDidMount() {
 		Animated.parallel([
-			Animated.loop(
-			Animated.timing(this.rotateX, {toValue: 1, duration: 3000})
-			),
+			//Animated.loop(
+				Animated.timing(this.rotateX, {toValue: 1, duration: 3000}),
+			//),
 
-			Animated.loop(
-			Animated.timing(this.rotateY, {toValue: 1, duration: 2000})
-			),
+			//Animated.loop(
+				Animated.timing(this.rotateY, {toValue: 1, duration: 3000}),
+			//),
+			
 		]).start();
+		
 	}
 
-/*
-				*/
-	
 
   render() {
 		var height = this.state.height;
@@ -48,48 +44,45 @@ export default class Grid extends React.Component {
 		var scale = this.state.scale;
 		var xAF = this.state.xAxisFactor;
 		var yAF = this.state.yAxisFactor;
+		var newScale = this.state.newScale;
 
-		
 		const rotationX = this.rotateX.interpolate({
 			inputRange: [0, 1],
-			outputRange: ['0deg', '180deg'],
+			outputRange: ['0deg', '-5deg'],
 		});
 
 		const rotationY = this.rotateY.interpolate({
 			inputRange: [0, 1],
-			outputRange: ['0deg', '180deg'],
+			outputRange: ['0deg', '10deg'],
 		});
-	
+
     return (
 			<G height={height} width={width}>
+				<Animated.View
+					style={[
+						styles.viewContainer,
+						{transform: [{rotate: rotationX}] }]}>
+				<Svg height={height} width={width}>
+					<AxisX height={height} width={width} scale={scale} 
+						xAxisFactor={xAF} yAxisFactor={yAF} />
+					<GridX height={height} width={width} scale={scale}
+						xAxisFactor={xAF} yAxisFactor={yAF} 
+						newScale={newScale} />
+				</Svg>
+				</Animated.View>
 
 				<Animated.View
 					style={[
 						styles.viewContainer,
 						{transform: [{rotate: rotationY}] }]}>
 				<Svg height={height} width={width}>
-				<AxisY height={height} width={width} scale={scale} 
-					xAxisFactor={xAF} yAxisFactor={yAF} />			
+					<AxisY height={height} width={width} scale={scale} 
+						xAxisFactor={xAF} yAxisFactor={yAF} />
+					<GridY height={height} width={width} scale={scale}
+						xAxisFactor={xAF} yAxisFactor={yAF} 
+						newScale={newScale} />
 				</Svg>
 				</Animated.View>
-
-				<Animated.View
-					style={[
-						styles.viewContainer,
-						{transform: [{rotate: rotationX}] }]}>
-				<Svg height={height} width={width}>
-				<AxisX height={height} width={width} scale={scale} 
-					xAxisFactor={xAF} yAxisFactor={yAF} />			
-			
-				</Svg>
-				</Animated.View>
-
-			
-
-				<GridX height={height} width={width} scale={scale}
-					xAxisFactor={xAF} yAxisFactor={yAF} />
-				<GridY height={height} width={width} scale={scale}
-					xAxisFactor={xAF} yAxisFactor={yAF} />			
 			</G>
     );
 	}
@@ -113,9 +106,6 @@ class AxisY extends Axis {
 		super.setPos(width, "0", width, height);
 	}
 }
-
-
-
 
 class LineX extends AxisX {
 	constructor(props) {
@@ -141,23 +131,54 @@ class LineOffset extends Axis {
 			width: this.props.width,
 			offset: this.props.offset,
 			type: this.props.type,
+			endVal: this.props.endVal,
 		};
+		this.anim = new Animated.Value(0);
 	}
 
+	
+	componentDidMount() {
+		//Animated.loop(
+			Animated.timing(this.anim, {toValue: 1, duration: 3000}).start();
+		//).start();
+	}
+	
+
 	render() {
+		console.log(this.state.endVal);
+		const translate = this.anim.interpolate({
+			inputRange: [0, 1],
+			outputRange: [0, this.state.endVal],
+		});
+		
 		if (this.state.type == "X") {
 			return (
-				<LineX 
-					height={this.state.height}
-					width={this.state.width}
-					offset={this.state.offset} />
+				<Animated.View 
+					style={[
+						styles.viewContainer,
+						{transform: [{translateY: translate}]} ]} >
+				<Svg height={this.state.height} width={this.state.width}>
+					<LineX 
+						height={this.state.height}
+						width={this.state.width}
+						offset={this.state.offset} />
+				</Svg>
+				</Animated.View>
 			);
 		} else if (this.state.type == "Y") {
 			return (
-				<LineY
-					height={this.state.height}
-					width={this.state.width}
-					offset={this.state.offset} />
+				<Animated.View 
+					style={[
+						styles.viewContainer,
+						{transform: [{translateX: translate}]} ]} >
+				<Svg height={this.state.height} width={this.state.width}>
+					<LineY 
+						height={this.state.height}
+						width={this.state.width}
+						offset={this.state.offset} />
+				</Svg>
+				</Animated.View>
+
 			);
 		}
 	}
@@ -172,27 +193,62 @@ class GridLines extends React.Component {
 		};
 	}
 
-	generateLines(numOfLines, delta, total, axisFactor, type) {
+	generateLines(numOfLines, delta, total, axisFactor, newDelta, type) {
+		var numOfLines = numOfLines;
 		var lines = [];
 		var initial = total * axisFactor;
-		var diff = total - initial;		
+		var diff = total - initial;
+		var dDelta = newDelta - delta;
+
+
+		console.log("total?");
+		console.log(total);
+		console.log("INITIAL??");
+		console.log(initial);
 
 		if (diff >= delta) {
 			initial += delta * Math.floor(diff / delta);
 		}
 
-		for (let i=0; i < numOfLines; i++) {
-			var offset = "" + initial - delta * i
-			lines.push(
-				<LineOffset
-					height={this.state.height}
-					width={this.state.width}
-					offset={offset}
-					type={type}
-					key={i} />
-			);
+		if (type == "X") {
+			for (let i = 0; i <= numOfLines; i++) {
+				var offset = "" + initial - delta * i;
+				var endVal = (i - Math.floor(diff / delta)) * dDelta;
+
+				console.log("is this endVal? see below");
+				console.log(endVal);
+
+				lines.push(
+					<LineOffset
+						height={this.state.height}
+						width={this.state.width}
+						offset={offset}
+						type={type}
+						endVal={endVal}
+						key={i} />
+				);
+			}
+			return lines;
+		} else if (type == "Y") {
+			for (let i = 0; i <= numOfLines; i++) {
+				var offset = "" + initial - delta * i;
+				console.log("OFFSET?");
+				console.log(offset);
+				var endVal = (i - Math.floor(diff / delta)) * dDelta;
+				
+				lines.push(
+					<LineOffset
+						height={this.state.height}
+						width={this.state.width}
+						offset={offset}
+						type={type}
+						endVal={endVal}
+						key={i} />
+				);
+			}
+			console.log(lines);
+			return lines; 			
 		}
-		return lines;
 	}
 }
 
@@ -204,6 +260,7 @@ class GridX extends GridLines {
 			width: this.props.width,
 			numOfLines: this.props.scale * 10,
 			xAxisFactor: this.props.xAxisFactor,
+			newNumOfLines: this.props.newScale * 10,
 		};
 	}
 
@@ -215,6 +272,7 @@ class GridX extends GridLines {
 					(this.state.height / this.state.numOfLines),
 					this.state.height,
 					this.state.xAxisFactor,
+					(this.state.height / this.state.newNumOfLines),
 					"X")}
 			</G>
 		);
@@ -229,6 +287,7 @@ class GridY extends GridLines {
 			width: this.props.width,
 			numOfLines: this.props.width / (this.props.height / (this.props.scale * 10)),
 			yAxisFactor: this.props.yAxisFactor,
+			newNumOfLines: this.props.width / (this.props.height / (this.props.newScale * 10)),
 		};
 	}
 
@@ -240,6 +299,7 @@ class GridY extends GridLines {
 					(this.state.width / this.state.numOfLines),
 					this.state.width,
 					this.state.yAxisFactor,
+					(this.state.width / this.state.newNumOfLines),
 					"Y")}
 			</G>
 		);

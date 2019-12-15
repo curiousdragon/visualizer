@@ -116,6 +116,7 @@ class GridLines extends React.Component {
 	}
 
 	generateLines(numOfLines, delta, total, axisFactor, type) {
+		var numOfLines = numOfLines * 2
 		var lines = [];
 		var initial = total * axisFactor;
 		var diff = total - initial;		
