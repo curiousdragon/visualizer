@@ -14,6 +14,7 @@ export default class Vector extends React.Component {
 			width: this.props.width,
 			origin: this.props.origin,
 			head: this.props.head,
+			color: this.props.color,
 		};
 	}
 
@@ -24,7 +25,8 @@ export default class Vector extends React.Component {
 			<G height={height} width={width}>
 				<LineArrowHead 
 					height={height} width={width} 
-					origin={this.state.origin} head={this.state.head} />
+					origin={this.state.origin} head={this.state.head} 
+					color={this.state.color} />
 			</G>
     );
   }
@@ -38,8 +40,8 @@ class Triangle extends React.Component {
 			head: this.props.head,
 			triBase: triangleSide,
 			triHeight: triangleSide * Math.pow(3, 0.5) / 2,
-			fill: "blue",
-			stroke: "blue",
+			fill: this.props.color,
+			stroke: this.props.color,
 			strokeWidth: "1",
 		};
 	}
@@ -112,6 +114,7 @@ class LineArrowHead extends React.Component {
 			y2: this.props.head.y(),
 			origin: this.props.origin,
 			head: this.props.head,
+			color: this.props.color
 		};
 	}
 
@@ -122,8 +125,10 @@ class LineArrowHead extends React.Component {
 		return (
 			<G height={this.state.height} width={this.state.width}>
 				<LineVector x1={this.state.x1} y1={this.state.y1}
-					x2={this.state.x2} y2={this.state.y2} />
-				<Triangle origin={this.state.origin} head={this.state.head} />
+					x2={this.state.x2} y2={this.state.y2} 
+					color={this.state.color} />
+				<Triangle origin={this.state.origin} head={this.state.head} 
+					color={this.state.color}/>
 			</G>
 		);
 	}

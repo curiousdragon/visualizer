@@ -4,7 +4,8 @@ import Svg, { G, Line } from 'react-native-svg';
 
 import Axis from './Axis';
 
-const gridLineOpacity = 0.1;
+const gridLineOpacity = 0.2;
+const strokeColor = "royalblue";
 
 export default class TransformGrid extends React.Component {
 	constructor(props) {
@@ -16,25 +17,38 @@ export default class TransformGrid extends React.Component {
 			xLinesNum: this.props.scale * 10,
 			xAxisFactor: this.props.xAxisFactor,
 			yAxisFactor: this.props.yAxisFactor,
-			newScale: this.props.newScale,
+			newScaleX: this.props.newScaleX,
+			newScaleY: this.props.newScaleY,
+			endRotateX: this.props.endRotateX,
+			endRotateY: this.props.endRotateY,
 		};
 
 		this.rotateX = new Animated.Value(0);
 		this.rotateY = new Animated.Value(0);
+		this.scaleX = new Animated.Value(0);
+		this.scaleY = new Animated.Value(0);
 	}
 
 	componentDidMount() {
+		console.log("I was called this time");
 		Animated.parallel([
-			//Animated.loop(
-				Animated.timing(this.rotateX, {toValue: 1, duration: 3000}),
-			//),
+			/*
+			Animated.parallel([
+				Animated.timing(this.scaleX, {toValue: 1, duration: 3000}),
+				Animated.timing(this.scaleY, {toValue: 1, duration: 3000}),
+			]),
+			*/
 
-			//Animated.loop(
-				Animated.timing(this.rotateY, {toValue: 1, duration: 3000}),
-			//),
-			
+			Animated.parallel([
+				//Animated.loop(
+					Animated.timing(this.rotateX, {toValue: 1, duration: 3000}),
+				//),
+
+				//Animated.loop(
+					Animated.timing(this.rotateY, {toValue: 1, duration: 3000}),
+				//),
+			])
 		]).start();
-		
 	}
 
 
@@ -44,16 +58,19 @@ export default class TransformGrid extends React.Component {
 		var scale = this.state.scale;
 		var xAF = this.state.xAxisFactor;
 		var yAF = this.state.yAxisFactor;
-		var newScale = this.state.newScale;
+		var newScaleX = this.state.newScaleX;
+		var newScaleY = this.state.newScaleY;
+		console.log("THIS IS THE STATE");
+		console.log(this.state.endRotateX);
 
 		const rotationX = this.rotateX.interpolate({
 			inputRange: [0, 1],
-			outputRange: ['0deg', '-5deg'],
+			outputRange: ['0deg', this.state.endRotateX],
 		});
 
 		const rotationY = this.rotateY.interpolate({
 			inputRange: [0, 1],
-			outputRange: ['0deg', '10deg'],
+			outputRange: ['0deg', this.state.endRotateY],
 		});
 
     return (
@@ -67,7 +84,7 @@ export default class TransformGrid extends React.Component {
 						xAxisFactor={xAF} yAxisFactor={yAF} />
 					<GridX height={height} width={width} scale={scale}
 						xAxisFactor={xAF} yAxisFactor={yAF} 
-						newScale={newScale} />
+						newScaleX={newScaleX} newScaleY={newScaleY} />
 				</Svg>
 				</Animated.View>
 
@@ -80,7 +97,7 @@ export default class TransformGrid extends React.Component {
 						xAxisFactor={xAF} yAxisFactor={yAF} />
 					<GridY height={height} width={width} scale={scale}
 						xAxisFactor={xAF} yAxisFactor={yAF} 
-						newScale={newScale} />
+						newScaleX={newScaleX} newScaleY={newScaleY} />
 				</Svg>
 				</Animated.View>
 			</G>
@@ -95,6 +112,7 @@ class AxisX extends Axis {
 		var height = this.state.height * this.props.xAxisFactor;
 		var width = this.state.width;
 		super.setPos("0", height, width, height);
+		super.setStroke(strokeColor);		
 	}
 }
 
@@ -104,6 +122,7 @@ class AxisY extends Axis {
 		var height = this.state.height;
 		var width = this.state.width * this.props.yAxisFactor;
 		super.setPos(width, "0", width, height);
+		super.setStroke(strokeColor);		
 	}
 }
 
@@ -145,7 +164,7 @@ class LineOffset extends Axis {
 	
 
 	render() {
-		console.log(this.state.endVal);
+		//console.log(this.state.endVal);
 		const translate = this.anim.interpolate({
 			inputRange: [0, 1],
 			outputRange: [0, this.state.endVal],
@@ -201,10 +220,12 @@ class GridLines extends React.Component {
 		var dDelta = newDelta - delta;
 
 
-		console.log("total?");
-		console.log(total);
-		console.log("INITIAL??");
-		console.log(initial);
+		//console.log("total?");
+		//console.log(total);
+		//console.log("INITIAL??");
+		//console.log(initial);
+		console.log("DELTA DELTA");
+		console.log(dDelta);
 
 		if (diff >= delta) {
 			initial += delta * Math.floor(diff / delta);
@@ -213,10 +234,10 @@ class GridLines extends React.Component {
 		if (type == "X") {
 			for (let i = 0; i <= numOfLines; i++) {
 				var offset = "" + initial - delta * i;
-				var endVal = (i - Math.floor(diff / delta)) * dDelta;
+				var endVal = (i - Math.floor(diff / delta)) / dDelta;
 
-				console.log("is this endVal? see below");
-				console.log(endVal);
+				//console.log("is this endVal? see below");
+				//console.log(endVal);
 
 				lines.push(
 					<LineOffset
@@ -232,10 +253,10 @@ class GridLines extends React.Component {
 		} else if (type == "Y") {
 			for (let i = 0; i <= numOfLines; i++) {
 				var offset = "" + initial - delta * i;
-				console.log("OFFSET?");
-				console.log(offset);
-				var endVal = (i - Math.floor(diff / delta)) * dDelta;
-				
+				//console.log("OFFSET?");
+				//console.log(offset);
+				var endVal = (i - Math.floor(diff / delta)) / dDelta;
+
 				lines.push(
 					<LineOffset
 						height={this.state.height}
@@ -246,7 +267,7 @@ class GridLines extends React.Component {
 						key={i} />
 				);
 			}
-			console.log(lines);
+			//console.log(lines);
 			return lines; 			
 		}
 	}
@@ -260,7 +281,7 @@ class GridX extends GridLines {
 			width: this.props.width,
 			numOfLines: this.props.scale * 10,
 			xAxisFactor: this.props.xAxisFactor,
-			newNumOfLines: this.props.newScale * 10,
+			newNumOfLines: this.props.height / this.props.newScaleY,
 		};
 	}
 
@@ -287,7 +308,7 @@ class GridY extends GridLines {
 			width: this.props.width,
 			numOfLines: this.props.width / (this.props.height / (this.props.scale * 10)),
 			yAxisFactor: this.props.yAxisFactor,
-			newNumOfLines: this.props.width / (this.props.height / (this.props.newScale * 10)),
+			newNumOfLines: this.props.width / this.props.newScaleX,
 		};
 	}
 

@@ -14,7 +14,7 @@ export default class LineVector extends Axis {
 			y1: this.props.y1,
 			x2: this.props.x2,
 			y2: this.props.y2,
-			stroke: "blue",
+			stroke: this.props.color,
 			strokeWidth: "2",
 			strokeOpacity: "0.8",
 		};

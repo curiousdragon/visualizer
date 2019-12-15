@@ -39,6 +39,10 @@ export default class Axis extends React.Component {
 		this.state.strokeOpacity = opacity;
 	}
 
+	setStroke(stroke) {
+		this.state.stroke = stroke;
+	}
+
 	render() {
 		return (
 			<Line 

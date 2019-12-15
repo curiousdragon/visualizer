@@ -4,7 +4,8 @@ import { G, Line, Circle, Rect } from 'react-native-svg';
 
 import Axis from './Axis';
 
-const gridLineOpacity = 0.1;
+const gridLineOpacity = 0.3;
+const strokeColor = "gainsboro";
 
 export default class Grid extends React.Component {
 	constructor(props) {
@@ -48,6 +49,7 @@ class AxisX extends Axis {
 		var height = this.state.height * this.props.xAxisFactor;
 		var width = this.state.width;
 		super.setPos("0", height, width, height);
+		super.setStroke(strokeColor);
 	}
 }
 
@@ -57,6 +59,7 @@ class AxisY extends Axis {
 		var height = this.state.height;
 		var width = this.state.width * this.props.yAxisFactor;
 		super.setPos(width, "0", width, height);
+		super.setStroke(strokeColor);
 	}
 }
 

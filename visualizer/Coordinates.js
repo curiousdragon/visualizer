@@ -37,8 +37,9 @@ export default class Coordinates {
 			height: this.state.height, 
 			width: this.state.width,
 			xLinesNum: this.state.xLinesNum,
-			origin: this.state.origin
+			origin: this.state.origin,
 		};
+		//console.log(props)
 		var point = new TouchPoint(props);
 		return new TouchPoint(props);
 	}
@@ -92,13 +93,13 @@ class TouchPoint extends Point {
 	}
 
 	convertXPosition(xPosition) {
-		var pos_x = xPosition * this.state.width;
-		return xPosition;
+		var pos_x = xPosition + 0.5 * (this.state.width/3); 
+		return pos_x;
 	}
 
 	convertYPosition(yPosition) {
-		var pos_y = yPosition * this.state.height;
-		return yPosition;
+		var pos_y = yPosition + 0.5 * (this.state.height/3);
+		return pos_y;
 	}
 
 	convertX(xPosition) {
