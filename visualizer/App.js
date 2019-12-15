@@ -1,15 +1,16 @@
 import React from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions, Text } from 'react-native';
 
 import Drawer from './Drawer';
 import Coordinates from './Coordinates';
 
+import Example from './Test';
+
 export default class App extends React.Component {
   render() {
     return (
-      <View style={styles.viewContainer}>
-				<Drawer />
-			</View>
+			//	<Example />
+			<Drawer />
     );
   }
 }
