@@ -30,52 +30,20 @@ const origBasisColor = "gainsboro";
 const newBasisColor = "lightsalmon";
 
 
-class Gridder extends TransformGrid {
-	constructor(props) {
-		super(props);
-		this.grid = <TransformGrid height={height} width={width} scale={scale} 
-			xAxisFactor={xAxisFactor} yAxisFactor={yAxisFactor} 
-			newScaleX={scale} newScaleY={scale} 
-			endRotateX={'0deg'} endRotateY={'0deg'} 
-			key="0" />;
-	}
-
-	getGrid() {
-		return this.grid;
-	}
-
-	updateEndVals(newScaleX, newScaleY, endRotateX, endRotateY) {
-		this.setState(state => ({
-			newScaleX: {newScaleX},
-			newScaleY: {newScaleY},
-			endRotateX: {endRotateX},
-			endRotateY: {endRotateY},
-		}));
-
-		this.componentDidMount();
-	}
-
-}
-
 export default class Transform extends React.Component {
 	constructor(props) {
 		super(props);
-		 //console.log(height);
 		var coords = new Coordinates({
 			height: {height}, 
 			width: {width}, 
 			scale: {scale},
 			xAxisFactor: {xAxisFactor},
 			yAxisFactor: {yAxisFactor}});
-		var origin = coords.getOrigin()
+		var origin = coords.getOrigin();
 		var delta = height / xLinesNum;
-		//console.log(coords);
 
 		this.state={
-			transformedGrid: 
-				<DefaultGrid
-					height={height} width={width} scale={scale} 
-					xAxisFactor={xAxisFactor} yAxisFactor={yAxisFactor} />,
+			transformedGrid: [],
 			vectorCounter: 0,
 			newBasisCounter: 0,
 			touchPoint: 0,
@@ -120,56 +88,26 @@ export default class Transform extends React.Component {
 	}
 
 
-
-	/*
-	_onDoubleTap = event => {
-		if (event.nativeEvent.state === State.ACTIVE) {
-			console.log(event.nativeEvent);
-			var point = this.state.coords.makeTouchPoint();
-			point.convertTouchToPoint(event.nativeEvent);
-			console.log(point);
-
-			var newVectorList = this.state.vectorList;
-			newVectorList.push(
-				<Vector 
-					height={height}
-					width={width} 
-					origin={this.state.coords.getOrigin()}
-					head={point} 
-					color={vectorColor}
-					key= {"" + (this.state.vectorCounter + 1)} />);
-
-			this.setState(state => ({
-				vectorCounter: state.vectorCounter + 1,
-				vectorList: newVectorList,
-			}));
-		}
-	}
-	*/
-
-	_onDoubleTap = event => {
+	_onTap = event => {
 		if (event.nativeEvent.state === State.ACTIVE) {
 			if (this.state.newBasisCounter == 3) {
 				this.setState(state => ({
-					transformedGrid: null,
+					transformedGrid: [],
 					newBasisCounter: 0,
 					newBasisList: [],
 					newBasisPoints: [],
 				}));
 			}	else if (this.state.newBasisCounter == 2) {
-				this._transformEvent();
-
-				console.log(this.state.transformedGrid);
+				var newGrid = this._transformEvent();
 
 				this.setState(state => ({
+					transformedGrid: newGrid,
 					newBasisCounter: state.newBasisCounter + 1,
 				}));
 
 			} else {
-				//console.log(event.nativeEvent);
 				var point = this.state.coords.makeTouchPoint();
 				point.convertTouchToPoint(event.nativeEvent);
-				console.log(point);
 
 				var newBasisVectorList = this.state.newBasisList;
 				var newBasisPointsList = this.state.newBasisPoints;
@@ -206,21 +144,67 @@ export default class Transform extends React.Component {
 		var basis2x = basis2.coord_x();
 		var basis2y = basis2.coord_y();
 
+		var diff1x = basis1x - originx;
+		var diff1y = basis1y - originy;
+		var diff2x = basis2x - originx;
+		var diff2y = basis2y - originy;
+
+		/*
+		var newScaleX = diff1x;
+		var newScaleY = diff2y;
+		*/
+
+		var angleX = 180 * Math.atan(Math.abs(diff1y) / Math.abs(diff1x)) / Math.PI; 
+		var angleY = 180 * Math.atan(Math.abs(diff2y) / Math.abs(diff2x)) / Math.PI; 
+		console.log("x: " + angleX + ", " + 
+								"y: " + angleY);
+
+		if (basis1x > 0 && basis1y > 0) { // first quadrant
+			angleX = 0 - angleX;
+		} else if (basis1x < 0 && basis1y > 0) { // second quadrant
+			angleX = -1 * (180 - angleX);
+		} else if (basis1x < 0 && basis1y < 0) { // third quadrant
+			angleX = -1 * (180 + angleX);
+		} else if (basis1x > 0 && basis1y < 0) { // fourth quadrant
+			angleX = -1 * angleX;
+		}
+
+		if (basis2x > 0 && basis2y > 0) { // first quadrant
+			angleY = (90 - angleY);
+		} else if (basis2x < 0 && basis2y > 0) { // second quadrant
+			angleY = 90 - angleY;
+		} else if (basis2x < 0 && basis2y < 0) { // third quadrant
+			angleY = -1 * (90 + angleY);
+		} else if (basis2x > 0 && basis2y < 0) { // fourth quadrant
+			angleY = (90 + angleY);
+		}
+
+
+		/*
+		var newScaleX = diff1x + (diff1y / (diff2y / diff2x * -1));
+		var newScaleY = diff2y + (diff2x * (diff1y / diff1x));
+		*/
+
+		
 		var newScaleX = Math.floor(Math.pow(Math.pow(basis1x - originx, 2) + 
 													Math.pow(basis1y - originy, 2), 0.5) * 100) / 100;
 		var newScaleY = Math.floor(Math.pow(Math.pow(basis2x - originx, 2) + 
 													Math.pow(basis2y - originy, 2), 0.5) * 100) / 100;
+		
 
+		var endRotateX = angleX;
+		var endRotateY = angleY;
+		console.log("x: " + endRotateX + ", " + 
+								"y: " + endRotateY);
+
+		/*
 		var endRotateX = -1 * Math.abs(Math.floor(180 * Math.atan((originy - basis1y) / 
 												(basis1x - originx)) / Math.PI * 100) / 100);
 		var endRotateY = 90 - Math.abs(Math.floor(180 * Math.atan((originy - basis2y) / 
 												(basis2x - originx)) / Math.PI * 100) / 100);
+		*/
 
-		console.log(endRotateY);
-
-		console.log("scale");
-		console.log(newScaleX);
-
+		/*
 		if (basis1x < 0 && basis1y > 0) {
 			endRotateX = -1 * (180 + endRotateX);
 		} else if (basis1x < 0 && basis1y < 0) {
@@ -236,34 +220,29 @@ export default class Transform extends React.Component {
 		} else if (basis2x > 0 && basis2y < 0) {
 			endRotateY = 180 - endRotateY;
 		}
+		*/
 
-		endRotateX = endRotateX % 360 + 'deg';		
-		endRotateY = endRotateY % 360 + 'deg';
+		endRotateX = Math.floor((endRotateX % 360) * 100) / 100 + 'deg';		
+		endRotateY = Math.floor((endRotateY % 360) * 100) / 100 + 'deg';
+		
 
-		console.log("END ROTATE X");
-		console.log(endRotateX);
-		console.log("END ROTATE Y");
-		console.log(endRotateY);
-
-		var transform = [];
+		var transform =	[];
 		transform.push(
-			<Gridder height={height} width={width} scale={scale} 
+			<TransformGrid 
+				height={height} width={width} 
+				scale={scale} 
 				xAxisFactor={xAxisFactor} yAxisFactor={yAxisFactor} 
 				newScaleX={newScaleX} newScaleY={newScaleY}
 				endRotateX={endRotateX} endRotateY={endRotateY} 
-				key="1" />);
-		
-		this.setState(state => ({
-			transformedGrid: transform,
-		}));	
+				key="1" />
+		);
+		return transform;
 	}
 
 	_onPan = event => {
 		if (event.nativeEvent.state === State.END) {
-			//console.log("HELLOOOOOO");
 			var point = this.state.coords.makeTouchPoint();
 			point.convertTouchToPoint(event.nativeEvent);
-			//console.log(point);
 
 			var newVectorList = this.state.vectorList;
 			newVectorList.push(
@@ -294,15 +273,13 @@ export default class Transform extends React.Component {
   render() {
 		return (
 			<TapGestureHandler 
-				onHandlerStateChange={this._onDoubleTap}
+				onHandlerStateChange={this._onTap}
 				numberOfTaps={1}> 
 			
 			<Animated.View style={styles.viewContainer}>
 
 			<PanGestureHandler
 				onHandlerStateChange={this._onPan}
-				//onGestureEvent={this._onPanEvent}
-				//onHandlerStateChange={this._onPan}
 				minDist={30}
 				minPointers={1}
 				maxPointers={1}>
@@ -315,11 +292,7 @@ export default class Transform extends React.Component {
 			<Animated.View style={styles.viewContainer}>
 				<Animated.View style={styles.viewContainer}>
 					<Svg height={height} width={width} >
-						<Animated.View style={styles.gridContainer}>
-						<Svg height={height} width={width}>
 						{this.state.transformedGrid}			
-						</Svg>
-						</Animated.View>
 					</Svg>
 				</Animated.View>
 
@@ -366,6 +339,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
+		position: 'absolute',
 	},
 
 	transformContainer: {

@@ -25,32 +25,14 @@ export default class TransformGrid extends React.Component {
 
 		this.rotateX = new Animated.Value(0);
 		this.rotateY = new Animated.Value(0);
-		this.scaleX = new Animated.Value(0);
-		this.scaleY = new Animated.Value(0);
 	}
 
 	componentDidMount() {
-		console.log("I was called this time");
 		Animated.parallel([
-			/*
-			Animated.parallel([
-				Animated.timing(this.scaleX, {toValue: 1, duration: 3000}),
-				Animated.timing(this.scaleY, {toValue: 1, duration: 3000}),
-			]),
-			*/
-
-			Animated.parallel([
-				//Animated.loop(
-					Animated.timing(this.rotateX, {toValue: 1, duration: 3000}),
-				//),
-
-				//Animated.loop(
-					Animated.timing(this.rotateY, {toValue: 1, duration: 3000}),
-				//),
-			])
+			Animated.timing(this.rotateX, {toValue: 1, duration: 3000, useNativeDriver: true}),
+			Animated.timing(this.rotateY, {toValue: 1, duration: 3000, useNativeDriver: true}),
 		]).start();
 	}
-
 
   render() {
 		var height = this.state.height;
@@ -60,8 +42,6 @@ export default class TransformGrid extends React.Component {
 		var yAF = this.state.yAxisFactor;
 		var newScaleX = this.state.newScaleX;
 		var newScaleY = this.state.newScaleY;
-		console.log("THIS IS THE STATE");
-		console.log(this.state.endRotateX);
 
 		const rotationX = this.rotateX.interpolate({
 			inputRange: [0, 1],
@@ -130,7 +110,8 @@ class LineX extends AxisX {
 	constructor(props) {
 		super(props);
 		super.setStrokeOpacity(gridLineOpacity);
-		super.setPosY(this.props.offset);
+		var offset = "" + this.props.offset
+		super.setPosY(offset);
 	}
 }
 
@@ -138,7 +119,7 @@ class LineY extends AxisY {
 	constructor(props) {
 		super(props);
 		super.setStrokeOpacity(gridLineOpacity);
-		super.setPosX(this.props.offset);
+		super.setPosX("" + this.props.offset);		
 	}
 }
 
@@ -155,16 +136,11 @@ class LineOffset extends Axis {
 		this.anim = new Animated.Value(0);
 	}
 
-	
 	componentDidMount() {
-		//Animated.loop(
-			Animated.timing(this.anim, {toValue: 1, duration: 3000}).start();
-		//).start();
+		Animated.timing(this.anim, {toValue: 1, duration: 3000, useNativeDriver: true}).start();
 	}
-	
 
 	render() {
-		//console.log(this.state.endVal);
 		const translate = this.anim.interpolate({
 			inputRange: [0, 1],
 			outputRange: [0, this.state.endVal],
@@ -197,7 +173,6 @@ class LineOffset extends Axis {
 						offset={this.state.offset} />
 				</Svg>
 				</Animated.View>
-
 			);
 		}
 	}
@@ -212,32 +187,17 @@ class GridLines extends React.Component {
 		};
 	}
 
-	generateLines(numOfLines, delta, total, axisFactor, newDelta, type) {
-		var numOfLines = numOfLines;
+	generateLines(numOfLines, delta, total, axisFactor, newScale, type) {
+		var numOfLines = Math.floor(numOfLines / 2);
 		var lines = [];
 		var initial = total * axisFactor;
 		var diff = total - initial;
-		var dDelta = newDelta - delta;
-
-
-		//console.log("total?");
-		//console.log(total);
-		//console.log("INITIAL??");
-		//console.log(initial);
-		console.log("DELTA DELTA");
-		console.log(dDelta);
-
-		if (diff >= delta) {
-			initial += delta * Math.floor(diff / delta);
-		}
 
 		if (type == "X") {
-			for (let i = 0; i <= numOfLines; i++) {
-				var offset = "" + initial - delta * i;
-				var endVal = (i - Math.floor(diff / delta)) * dDelta;
-
-				//console.log("is this endVal? see below");
-				//console.log(endVal);
+			for (let i = -1 * numOfLines; i <= numOfLines; i++) {
+				var offset = Math.floor((initial - delta * i) * 10000) / 10000;
+				var endVal = (initial - delta * i * newScale);
+				endVal = endVal - offset;
 
 				lines.push(
 					<LineOffset
@@ -251,11 +211,10 @@ class GridLines extends React.Component {
 			}
 			return lines;
 		} else if (type == "Y") {
-			for (let i = 0; i <= numOfLines; i++) {
-				var offset = "" + initial - delta * i;
-				//console.log("OFFSET?");
-				//console.log(offset);
-				var endVal = (i - Math.floor(diff / delta)) * dDelta;
+			for (let i = -1 * numOfLines; i <= numOfLines; i++) {
+				var offset = Math.floor((initial - delta * i) * 10000) / 10000;
+				var endVal = (initial - delta * i * newScale);
+				endVal = endVal - offset;
 
 				lines.push(
 					<LineOffset
@@ -267,7 +226,6 @@ class GridLines extends React.Component {
 						key={i} />
 				);
 			}
-			//console.log(lines);
 			return lines; 			
 		}
 	}
@@ -281,7 +239,7 @@ class GridX extends GridLines {
 			width: this.props.width,
 			numOfLines: this.props.scale * 10,
 			xAxisFactor: this.props.xAxisFactor,
-			newNumOfLines: this.props.height / this.props.newScaleY / this.props.scale / 10,
+			newScaleY: this.props.newScaleY,
 		};
 	}
 
@@ -293,7 +251,7 @@ class GridX extends GridLines {
 					(this.state.height / this.state.numOfLines),
 					this.state.height,
 					this.state.xAxisFactor,
-					(this.state.height / this.state.newNumOfLines),
+					this.state.newScaleY,
 					"X")}
 			</G>
 		);
@@ -306,9 +264,9 @@ class GridY extends GridLines {
 		this.state={
 			height: this.props.height,
 			width: this.props.width,
-			numOfLines: this.props.width / (this.props.height / (this.props.scale * 10)),
+			numOfLines: this.props.width / this.props.height * this.props.scale * 10,
 			yAxisFactor: this.props.yAxisFactor,
-			newNumOfLines: this.props.width / this.props.newScaleX / this.props.scale / 10,
+			newScaleX: this.props.newScaleX,
 		};
 	}
 
@@ -317,10 +275,10 @@ class GridY extends GridLines {
 			<G height={this.state.height} width={this.state.width}>
 				{this.generateLines(
 					this.state.numOfLines,
-					(this.state.width / this.state.numOfLines),
+					Math.floor((this.state.width / this.state.numOfLines) * 100) / 100,
 					this.state.width,
 					this.state.yAxisFactor,
-					(this.state.width / this.state.newNumOfLines),
+					this.state.newScaleX,
 					"Y")}
 			</G>
 		);
@@ -331,8 +289,8 @@ class GridY extends GridLines {
 const styles = StyleSheet.create({
 	viewContainer: {
 		flex: 1,
-		justifyContent: 'center',
 		alignItems: 'center',
+		justifyContent: 'center',
 		position: 'absolute',
 	},
 

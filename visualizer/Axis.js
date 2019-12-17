@@ -44,6 +44,7 @@ export default class Axis extends React.Component {
 	}
 
 	render() {
+				
 		return (
 			<Line 
 			x1={this.state.x1} y1={this.state.y1}
