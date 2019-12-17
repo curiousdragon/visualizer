@@ -25,9 +25,9 @@ const widthFactor = 1.5;
 const height = Dimensions.get('window').height * heightFactor;
 const width = Dimensions.get('window').width * widthFactor;
 
-const vectorColor = "blue";
+const vectorColor = "dodgerblue";
 const origBasisColor = "gainsboro";
-const newBasisColor = "red";
+const newBasisColor = "lightsalmon";
 
 
 class Gridder extends TransformGrid {
@@ -60,7 +60,7 @@ class Gridder extends TransformGrid {
 export default class Transform extends React.Component {
 	constructor(props) {
 		super(props);
-		//console.log(height);
+		 //console.log(height);
 		var coords = new Coordinates({
 			height: {height}, 
 			width: {width}, 
@@ -169,7 +169,7 @@ export default class Transform extends React.Component {
 				//console.log(event.nativeEvent);
 				var point = this.state.coords.makeTouchPoint();
 				point.convertTouchToPoint(event.nativeEvent);
-				//console.log(point);
+				console.log(point);
 
 				var newBasisVectorList = this.state.newBasisList;
 				var newBasisPointsList = this.state.newBasisPoints;
@@ -198,44 +198,47 @@ export default class Transform extends React.Component {
 		var basis2 = this.state.newBasisPoints[1];
 		var origin = this.state.coords.getOrigin();
 
-		var originx = origin.x();
-		var originy = origin.y();
+		var originx = origin.coord_x();
+		var originy = origin.coord_y();
 
-		var basis1x = basis1.x();
-		var basis1y = basis1.y();
-		var basis2x = basis2.x();
-		var basis2y = basis2.y();
+		var basis1x = basis1.coord_x();
+		var basis1y = basis1.coord_y();
+		var basis2x = basis2.coord_x();
+		var basis2y = basis2.coord_y();
 
 		var newScaleX = Math.floor(Math.pow(Math.pow(basis1x - originx, 2) + 
 													Math.pow(basis1y - originy, 2), 0.5) * 100) / 100;
 		var newScaleY = Math.floor(Math.pow(Math.pow(basis2x - originx, 2) + 
 													Math.pow(basis2y - originy, 2), 0.5) * 100) / 100;
 
-		var endRotateX = (-1 * Math.floor(180 * Math.atan((originy - basis1y) / 
-												(basis1x - originx)) / Math.PI * 100) / 100) + 'deg';
-		var endRotateY = Math.floor(180 * Math.atan((originy - basis2y) / 
-												(basis2x - originx)) / Math.PI * 100) / 100;
+		var endRotateX = -1 * Math.abs(Math.floor(180 * Math.atan((originy - basis1y) / 
+												(basis1x - originx)) / Math.PI * 100) / 100);
+		var endRotateY = 90 - Math.abs(Math.floor(180 * Math.atan((originy - basis2y) / 
+												(basis2x - originx)) / Math.PI * 100) / 100);
 
 		console.log(endRotateY);
 
 		console.log("scale");
 		console.log(newScaleX);
 
-
-		if (endRotateX > 0) {
-			endRotateX = -90 + endRotateX;
-		} else if (endRotateX < 0) {
-			endRotateX = (90 + endRotateX);
-		}
-		
-
-		if (endRotateY > 0) {
-			endRotateY = 90 - endRotateY;
-		} else if (endRotateY < 0) {
-			endRotateY = -1 * (90 + endRotateY);
+		if (basis1x < 0 && basis1y > 0) {
+			endRotateX = -1 * (180 + endRotateX);
+		} else if (basis1x < 0 && basis1y < 0) {
+			endRotateX = -1 * (270 + (90 - endRotateX)) + 180;
+		} else if (basis1x > 0 && basis1y < 0) {
+			endRotateX = -1 * endRotateX;
 		}
 
-		endRotateY = endRotateY + 'deg';
+		if (basis2x < 0 && basis2y > 0) {
+			endRotateY = endRotateY * -1;
+		} else if (basis2x < 0 && basis2y < 0) {
+			endRotateY = -1 * (180 - endRotateY);
+		} else if (basis2x > 0 && basis2y < 0) {
+			endRotateY = 180 - endRotateY;
+		}
+
+		endRotateX = endRotateX % 360 + 'deg';		
+		endRotateY = endRotateY % 360 + 'deg';
 
 		console.log("END ROTATE X");
 		console.log(endRotateX);
@@ -281,7 +284,6 @@ export default class Transform extends React.Component {
 
 	_onLongPress = event => {
 		if (event.nativeEvent.state === State.END) {
-			console.log("pinch");
 			this.setState(state => ({
 				vectorCounter: 0,
 				vectorList: new Array(),
@@ -293,7 +295,7 @@ export default class Transform extends React.Component {
 		return (
 			<TapGestureHandler 
 				onHandlerStateChange={this._onDoubleTap}
-				numberOfTaps={2}> 
+				numberOfTaps={1}> 
 			
 			<Animated.View style={styles.viewContainer}>
 
@@ -301,7 +303,7 @@ export default class Transform extends React.Component {
 				onHandlerStateChange={this._onPan}
 				//onGestureEvent={this._onPanEvent}
 				//onHandlerStateChange={this._onPan}
-				minDist={10}
+				minDist={30}
 				minPointers={1}
 				maxPointers={1}>
 

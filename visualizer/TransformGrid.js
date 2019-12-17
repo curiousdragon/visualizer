@@ -281,7 +281,7 @@ class GridX extends GridLines {
 			width: this.props.width,
 			numOfLines: this.props.scale * 10,
 			xAxisFactor: this.props.xAxisFactor,
-			newNumOfLines: this.props.height / this.props.newScaleY,
+			newNumOfLines: this.props.height / this.props.newScaleY / this.props.scale / 10,
 		};
 	}
 
@@ -308,7 +308,7 @@ class GridY extends GridLines {
 			width: this.props.width,
 			numOfLines: this.props.width / (this.props.height / (this.props.scale * 10)),
 			yAxisFactor: this.props.yAxisFactor,
-			newNumOfLines: this.props.width / this.props.newScaleX,
+			newNumOfLines: this.props.width / this.props.newScaleX / this.props.scale / 10,
 		};
 	}
 
