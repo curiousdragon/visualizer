@@ -18,7 +18,7 @@ import {
 	LongPressGestureHandler,
 } from 'react-native-gesture-handler';
 
-import Svg, { Text as TextSvg, TSpan, } from 'react-native-svg';
+import Svg, { Text as TextSvg, TSpan, G, } from 'react-native-svg';
 
 import Transform from './Transform';
 import Coordinates from './Coordinates';
@@ -64,8 +64,10 @@ class HomeScreen extends React.Component {
 						textAnchor="middle">
 							visual-izer
 					</TextSvg>
+					<G opacity="0.7">
 					<Grid height={height} width={width} scale={scale} 
 						xAxisFactor={xAxisFactor} yAxisFactor={yAxisFactor} />
+					</G>
 					<Vector 
 						height={height}
 						width={width} 

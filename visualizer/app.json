@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "Visualizer",
+	"description": "This project aims to build up a visual intuition for matrices as linear transformations. A user can draw basis vectors and watch the corresponding transformation to the new basis.",
     "slug": "visualizer",
     "privacy": "unlisted",
     "sdkVersion": "35.0.0",
