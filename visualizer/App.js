@@ -194,7 +194,7 @@ class GraphScreen extends React.Component {
 		return (
 			<LongPressGestureHandler
 				onHandlerStateChange={this._onLongPress}
-				minDurationMs={1000} > 
+				minDurationMs={500} > 
 				<Animated.View style={styles.viewContainer}>
 					<Transform />
 				</Animated.View>
@@ -233,6 +233,7 @@ const styles = StyleSheet.create({
 	textContainer: {
 		flex: 1,
 		justifyContent: 'center',
+		alignItems: 'center',
 		width: '80%',
 		position: 'absolute',		
 	},
