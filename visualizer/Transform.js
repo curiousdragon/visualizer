@@ -166,13 +166,13 @@ export default class Transform extends React.Component {
 		} else if (basis1x < 0 && basis1y < 0) { // third quadrant
 			angleX = -1 * (180 + angleX);
 		} else if (basis1x > 0 && basis1y < 0) { // fourth quadrant
-			angleX = -1 * angleX;
+			angleX = angleX;
 		}
 
 		if (basis2x > 0 && basis2y > 0) { // first quadrant
 			angleY = (90 - angleY);
 		} else if (basis2x < 0 && basis2y > 0) { // second quadrant
-			angleY = 90 - angleY;
+			angleY = -1 * (90 - angleY);
 		} else if (basis2x < 0 && basis2y < 0) { // third quadrant
 			angleY = -1 * (90 + angleY);
 		} else if (basis2x > 0 && basis2y < 0) { // fourth quadrant
